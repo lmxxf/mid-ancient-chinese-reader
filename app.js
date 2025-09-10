@@ -5,7 +5,7 @@ class MiddleChineseReader {
         this.synthesis = window.speechSynthesis;
         this.isReading = false;
         this.pronunciation = null;
-        this.useMCPronunciation = false; // 是否使用中古音发音
+        this.useMCPronunciation = true; // 默认使用中古音发音
     }
 
     init() {
@@ -88,9 +88,9 @@ class MiddleChineseReader {
             mcBtn.id = 'mcModeBtn';
             mcBtn.className = 'secondary-btn';
             
-            // 始终显示按钮，让用户决定是否使用中古音
-            mcBtn.innerHTML = '🎵 现代音';
-            mcBtn.title = '点击切换到中古音发音模式';
+            // 默认中古音模式
+            mcBtn.innerHTML = '🏺 中古音';
+            mcBtn.title = '当前使用中古音发音，点击切换到现代音';
             mcBtn.addEventListener('click', () => this.toggleMCMode());
             
             buttonGroup.appendChild(mcBtn);
@@ -142,7 +142,12 @@ class MiddleChineseReader {
         this.useMCPronunciation = !this.useMCPronunciation;
         const mcBtn = document.getElementById('mcModeBtn');
         
-        if (this.useMCPronunciation) {
+        if (!this.useMCPronunciation) {
+            // 切换到现代音模式
+            mcBtn.innerHTML = '🎵 现代音';
+            mcBtn.title = '当前使用现代音发音，点击切换到中古音';
+            console.log('🎵 已切换到现代音发音模式');
+        } else {
             // 切换到中古音模式，需要确保AudioContext可用
             try {
                 if (!this.pronunciation.audioContext) {
@@ -169,10 +174,6 @@ class MiddleChineseReader {
                 alert('❌ 中古音激活失败: ' + error.message);
                 this.useMCPronunciation = false;
             }
-        } else {
-            mcBtn.innerHTML = '🎵 现代音';
-            mcBtn.title = '当前使用现代音发音，点击切换到中古音';
-            console.log('🎵 已切换到现代音发音模式');
         }
     }
 
