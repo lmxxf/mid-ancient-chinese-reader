@@ -292,7 +292,23 @@ class MiddleChineseReader {
 
     // 停止朗读
     stopReading() {
+        // 停止现代音（Web Speech API）
         this.synthesis.cancel();
+        
+        // 停止中古音（Web Audio API）
+        if (this.pronunciation && this.pronunciation.audioContext) {
+            // 停止所有正在播放的音频节点
+            try {
+                // 创建一个新的silence来覆盖当前播放
+                const silenceNode = this.pronunciation.audioContext.createGain();
+                silenceNode.gain.setValueAtTime(0, this.pronunciation.audioContext.currentTime);
+                silenceNode.connect(this.pronunciation.audioContext.destination);
+                silenceNode.disconnect();
+            } catch (error) {
+                console.warn('停止中古音播放时出错:', error);
+            }
+        }
+        
         this.isReading = false;
         this.readBtn.textContent = '🔊 朗读全文';
     }
@@ -301,16 +317,47 @@ class MiddleChineseReader {
     async readWithMiddleChinese(text) {
         try {
             console.log('🏺 使用中古音朗读:', text);
+            
+            // 确保AudioContext已激活
+            if (!this.pronunciation.audioContext) {
+                console.log('⏳ 首次使用，激活AudioContext...');
+                const success = await this.pronunciation.createAudioContext();
+                if (!success) {
+                    throw new Error('AudioContext激活失败');
+                }
+            }
+            
+            // 开始朗读
             await this.pronunciation.pronounceText(text);
             
             // 朗读完成
+            console.log('✅ 中古音朗读完成');
             this.isReading = false;
             this.readBtn.textContent = '🔊 朗读全文';
         } catch (error) {
-            console.error('中古音朗读错误:', error);
+            console.error('❌ 中古音朗读错误:', error);
             this.isReading = false;
             this.readBtn.textContent = '🔊 朗读全文';
-            alert('中古音朗读失败，请尝试现代音模式');
+            
+            // 更详细的错误提示
+            let errorMsg = '中古音朗读失败：';
+            if (error.message.includes('AudioContext')) {
+                errorMsg += '音频系统初始化失败，请尝试刷新页面';
+            } else if (error.message.includes('suspended')) {
+                errorMsg += '音频被浏览器阻止，请点击页面任意位置后重试';
+            } else {
+                errorMsg += error.message;
+            }
+            
+            alert(errorMsg + '\n\n将自动切换到现代音模式');
+            
+            // 自动回退到现代音
+            this.useMCPronunciation = false;
+            const mcBtn = document.getElementById('mcModeBtn');
+            if (mcBtn) {
+                mcBtn.innerHTML = '🎵 现代音';
+                mcBtn.title = '中古音失败，当前使用现代音';
+            }
         }
     }
 

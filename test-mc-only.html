@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中古音发音测试</title>
+    <style>
+        body {
+            font-family: 'Microsoft YaHei', sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .test-btn {
+            background: #3498db;
+            color: white;
+        }
+        .test-btn:hover {
+            background: #2980b9;
+        }
+        #log {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 中古音发音系统独立测试</h1>
+    
+    <div class="test-section">
+        <h3>📊 系统状态检测</h3>
+        <button class="test-btn" onclick="checkSystem()">检查系统支持</button>
+        <button class="test-btn" onclick="createAudioContext()">创建AudioContext</button>
+        <button class="test-btn" onclick="clearLog()">清空日志</button>
+    </div>
+
+    <div class="test-section">
+        <h3>🔊 直接音频测试</h3>
+        <button class="test-btn" onclick="testBasicSound()">基础音频测试 (440Hz)</button>
+        <button class="test-btn" onclick="testMultipleFreq()">多频率测试</button>
+        <button class="test-btn" onclick="testComplexSound()">复合音测试</button>
+    </div>
+
+    <div class="test-section">
+        <h3>🏺 中古音字符测试</h3>
+        <button class="test-btn" onclick="testChar('人')">测试: 人 [nrjin]</button>
+        <button class="test-btn" onclick="testChar('生')">测试: 生 [sraeng]</button>
+        <button class="test-btn" onclick="testChar('如')">测试: 如 [njo]</button>
+        <button class="test-btn" onclick="testChar('梦')">测试: 梦 [mjuwngH]</button>
+    </div>
+
+    <div class="test-section">
+        <h3>📝 文本朗读测试</h3>
+        <input type="text" id="testText" value="人生如梦" style="padding: 10px; margin: 5px; width: 200px;">
+        <button class="test-btn" onclick="testTextPronunciation()">中古音朗读</button>
+        <button class="test-btn" onclick="testModernPronunciation()">现代音对比</button>
+    </div>
+
+    <div class="test-section">
+        <h3>📋 测试日志</h3>
+        <div id="log"></div>
+    </div>
+
+    <!-- 加载中古音系统 -->
+    <script src="middle-chinese-data.js"></script>
+    <script src="middle-chinese-pronunciation.js"></script>
+
+    <script>
+        let mc = null;
+        let audioContext = null;
+
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.textContent += `[${time}] ${message}\n`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLog() {
+            document.getElementById('log').textContent = '';
+        }
+
+        function checkSystem() {
+            log('🔍 检查系统支持...');
+            log(`AudioContext: ${!!window.AudioContext}`);
+            log(`webkitAudioContext: ${!!window.webkitAudioContext}`);
+            log(`mozAudioContext: ${!!window.mozAudioContext}`);
+            log(`MiddleChinesePronunciation: ${typeof MiddleChinesePronunciation}`);
+            log(`middleChineseData: ${typeof middleChineseData}`);
+            log(`数据规模: ${Object.keys(middleChineseData || {}).length} 个汉字`);
+        }
+
+        async function createAudioContext() {
+            try {
+                log('⏳ 创建AudioContext...');
+                const AudioContextClass = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
+                audioContext = new AudioContextClass();
+                log(`✅ AudioContext创建成功，状态: ${audioContext.state}`);
+                
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                    log(`🔊 AudioContext已激活，新状态: ${audioContext.state}`);
+                }
+
+                // 创建中古音系统
+                mc = new MiddleChinesePronunciation();
+                log('🎵 中古音系统已创建');
+                
+            } catch (error) {
+                log(`❌ AudioContext创建失败: ${error.message}`);
+            }
+        }
+
+        async function testBasicSound() {
+            if (!audioContext) {
+                await createAudioContext();
+            }
+            
+            try {
+                log('🔊 播放基础测试音 440Hz...');
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
+                oscillator.type = 'sine';
+                gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 0.5);
+                
+                log('✅ 基础测试音播放完成');
+            } catch (error) {
+                log(`❌ 基础测试音失败: ${error.message}`);
+            }
+        }
+
+        async function testMultipleFreq() {
+            if (!audioContext) {
+                await createAudioContext();
+            }
+            
+            const frequencies = [200, 300, 400, 500, 600];
+            log('🎶 播放多频率测试...');
+            
+            for (let i = 0; i < frequencies.length; i++) {
+                setTimeout(() => {
+                    try {
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
+                        
+                        oscillator.frequency.setValueAtTime(frequencies[i], audioContext.currentTime);
+                        oscillator.type = 'sine';
+                        gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
+                        
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.3);
+                        
+                        log(`🔊 播放 ${frequencies[i]}Hz`);
+                    } catch (error) {
+                        log(`❌ ${frequencies[i]}Hz 播放失败: ${error.message}`);
+                    }
+                }, i * 400);
+            }
+        }
+
+        async function testComplexSound() {
+            if (!audioContext) {
+                await createAudioContext();
+            }
+            
+            try {
+                log('🎵 播放复合音测试...');
+                
+                // 同时播放多个频率
+                const frequencies = [220, 330, 440];
+                const oscillators = [];
+                const gainNode = audioContext.createGain();
+                
+                gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+                gainNode.connect(audioContext.destination);
+                
+                frequencies.forEach(freq => {
+                    const osc = audioContext.createOscillator();
+                    osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    osc.type = 'sine';
+                    osc.connect(gainNode);
+                    osc.start();
+                    osc.stop(audioContext.currentTime + 1);
+                    oscillators.push(osc);
+                });
+                
+                log('✅ 复合音测试完成');
+            } catch (error) {
+                log(`❌ 复合音测试失败: ${error.message}`);
+            }
+        }
+
+        async function testChar(char) {
+            if (!mc) {
+                await createAudioContext();
+            }
+            
+            try {
+                const data = middleChineseData[char];
+                if (data) {
+                    log(`🏺 测试中古音: ${char} [${data.ipa}] ${data.tone}`);
+                    await mc.pronounceCharacter(char);
+                    log(`✅ ${char} 发音完成`);
+                } else {
+                    log(`❌ 未找到 ${char} 的中古音数据`);
+                }
+            } catch (error) {
+                log(`❌ ${char} 发音失败: ${error.message}`);
+            }
+        }
+
+        async function testTextPronunciation() {
+            const text = document.getElementById('testText').value;
+            if (!mc) {
+                await createAudioContext();
+            }
+            
+            try {
+                log(`🏺 中古音朗读: ${text}`);
+                await mc.pronounceText(text, 1.0);
+                log(`✅ 中古音朗读完成`);
+            } catch (error) {
+                log(`❌ 中古音朗读失败: ${error.message}`);
+            }
+        }
+
+        async function testModernPronunciation() {
+            const text = document.getElementById('testText').value;
+            try {
+                log(`🎵 现代音朗读: ${text}`);
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'zh-CN';
+                utterance.rate = 0.8;
+                speechSynthesis.speak(utterance);
+                log(`✅ 现代音朗读开始`);
+            } catch (error) {
+                log(`❌ 现代音朗读失败: ${error.message}`);
+            }
+        }
+
+        // 页面加载后初始化
+        window.addEventListener('load', () => {
+            log('🔧 中古音测试页面已加载');
+            log('点击"检查系统支持"开始测试');
+        });
+    </script>
+</body>
+</html>

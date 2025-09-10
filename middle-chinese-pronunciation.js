@@ -202,12 +202,15 @@ class MiddleChinesePronunciation {
 
         try {
             const segments = this.parseIPA(ipa);
-            let delay = 0;
-
-            for (const segment of segments) {
+            console.log(`🎯 解析IPA [${ipa}] 为音段:`, segments);
+            
+            for (let i = 0; i < segments.length; i++) {
+                const segment = segments[i];
                 const params = this.getAudioParams(segment);
                 
-                setTimeout(async () => {
+                console.log(`🔊 播放音段 ${i + 1}/${segments.length}: ${segment} (${params.frequency}Hz)`);
+                
+                try {
                     await this.synthesizeSound(
                         params.frequency,
                         params.type,
@@ -215,10 +218,17 @@ class MiddleChinesePronunciation {
                         params.volume || 0.3,
                         params.pitchShift || 1
                     );
-                }, delay * 1000);
-
-                delay += params.duration || 0.2;
+                    
+                    // 音段间的短暂停顿
+                    if (i < segments.length - 1) {
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                } catch (error) {
+                    console.error(`❌ 音段 ${segment} 播放失败:`, error);
+                }
             }
+            
+            console.log(`✅ IPA [${ipa}] 发音完成`);
         } catch (error) {
             console.error('IPA发音错误:', error);
         }
@@ -227,15 +237,26 @@ class MiddleChinesePronunciation {
     // 发音文本序列
     async pronounceText(text, speed = 1) {
         const characters = text.match(/[\u4e00-\u9fff]/g) || [];
-        let totalDelay = 0;
-
-        for (const char of characters) {
-            setTimeout(async () => {
+        console.log(`🎵 准备发音 ${characters.length} 个汉字:`, characters.join(''));
+        
+        for (let i = 0; i < characters.length; i++) {
+            const char = characters[i];
+            console.log(`🔊 正在发音第 ${i + 1}/${characters.length} 个字: ${char}`);
+            
+            try {
                 await this.pronounceCharacter(char);
-            }, totalDelay);
-
-            totalDelay += (800 / speed); // 字间间隔
+                
+                // 字间停顿
+                if (i < characters.length - 1) {
+                    await new Promise(resolve => setTimeout(resolve, 800 / speed));
+                }
+            } catch (error) {
+                console.error(`❌ 发音失败: ${char}`, error);
+                // 即使单个字失败也继续发音其他字
+            }
         }
+        
+        console.log('✅ 文本发音完成');
     }
 
     // 获取发音能力状态
