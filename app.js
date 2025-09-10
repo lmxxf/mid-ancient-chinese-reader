@@ -64,7 +64,8 @@ class MiddleChineseReader {
                 const status = this.pronunciation.getStatus();
                 console.log('🎵 中古音发音系统状态:', status);
                 
-                if (status.supported) {
+                // 只要Web Audio API可用就显示按钮，不管当前AudioContext状态
+                if (window.AudioContext || window.webkitAudioContext || window.mozAudioContext) {
                     // 添加切换按钮到界面
                     this.addMCModeToggle();
                     console.log('✅ 中古音发音系统已就绪');
@@ -87,18 +88,10 @@ class MiddleChineseReader {
             mcBtn.id = 'mcModeBtn';
             mcBtn.className = 'secondary-btn';
             
-            // 检查是否为移动设备
-            const isMobile = this.pronunciation && this.pronunciation.isMobileDevice();
-            
-            if (isMobile) {
-                mcBtn.innerHTML = '📱 激活中古音';
-                mcBtn.title = '点击激活中古音发音功能';
-                mcBtn.addEventListener('click', () => this.activateMCMode());
-            } else {
-                mcBtn.innerHTML = '🎵 现代音';
-                mcBtn.title = '点击切换到中古音发音模式';
-                mcBtn.addEventListener('click', () => this.toggleMCMode());
-            }
+            // 始终显示按钮，让用户决定是否使用中古音
+            mcBtn.innerHTML = '🎵 现代音';
+            mcBtn.title = '点击切换到中古音发音模式';
+            mcBtn.addEventListener('click', () => this.toggleMCMode());
             
             buttonGroup.appendChild(mcBtn);
         }
@@ -139,14 +132,43 @@ class MiddleChineseReader {
     }
 
     // 切换中古音发音模式
-    toggleMCMode() {
+    async toggleMCMode() {
+        // 先确保中古音系统可用
+        if (!this.pronunciation) {
+            alert('❌ 中古音系统未初始化');
+            return;
+        }
+
         this.useMCPronunciation = !this.useMCPronunciation;
         const mcBtn = document.getElementById('mcModeBtn');
         
         if (this.useMCPronunciation) {
-            mcBtn.innerHTML = '🏺 中古音';
-            mcBtn.title = '当前使用中古音发音，点击切换到现代音';
-            console.log('🏺 已切换到中古音发音模式');
+            // 切换到中古音模式，需要确保AudioContext可用
+            try {
+                if (!this.pronunciation.audioContext) {
+                    console.log('⏳ 激活中古音系统...');
+                    const success = await this.pronunciation.createAudioContext();
+                    if (!success) {
+                        alert('❌ 中古音系统激活失败，请检查浏览器支持');
+                        this.useMCPronunciation = false;
+                        return;
+                    }
+                }
+                
+                mcBtn.innerHTML = '🏺 中古音';
+                mcBtn.title = '当前使用中古音发音，点击切换到现代音';
+                console.log('🏺 已切换到中古音发音模式');
+                
+                // 播放一个测试音验证中古音系统
+                setTimeout(() => {
+                    this.pronunciation.pronounceCharacter('音');
+                }, 100);
+                
+            } catch (error) {
+                console.error('中古音激活失败:', error);
+                alert('❌ 中古音激活失败: ' + error.message);
+                this.useMCPronunciation = false;
+            }
         } else {
             mcBtn.innerHTML = '🎵 现代音';
             mcBtn.title = '当前使用现代音发音，点击切换到中古音';
@@ -252,6 +274,12 @@ class MiddleChineseReader {
 
         this.isReading = true;
         this.readBtn.textContent = '⏹️ 停止朗读';
+
+        console.log('🔍 朗读模式检查:', {
+            useMCPronunciation: this.useMCPronunciation,
+            hasPronunciation: !!this.pronunciation,
+            audioContext: this.pronunciation ? !!this.pronunciation.audioContext : false
+        });
 
         if (this.useMCPronunciation && this.pronunciation) {
             // 使用中古音发音

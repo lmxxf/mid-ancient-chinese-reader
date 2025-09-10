@@ -84,14 +84,19 @@
     <script src="middle-chinese-pronunciation.js"></script>
     <script src="app.js"></script>
     
-    <!-- 调试工具 (开发环境) -->
+    <!-- 调试工具 (开发环境和线上调试) -->
     <script>
-        // 仅在localhost或调试环境加载调试工具
+        // 加载调试工具
         if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.search.includes('debug=1')) {
             const debugScript = document.createElement('script');
             debugScript.src = 'debug-mobile.js';
             document.head.appendChild(debugScript);
         }
+        
+        // 总是加载简单测试工具
+        const testScript = document.createElement('script');
+        testScript.src = 'test-mc-simple.js';
+        document.head.appendChild(testScript);
     </script>
 </body>
 </html>
