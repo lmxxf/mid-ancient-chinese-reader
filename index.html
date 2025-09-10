@@ -106,6 +106,28 @@
         const testScript = document.createElement('script');
         testScript.src = 'test-mc-simple.js';
         document.head.appendChild(testScript);
+        
+        // 确保中古音按钮显示 - 备用创建机制
+        setTimeout(() => {
+            if (!document.getElementById('mcModeBtn') && 
+                (window.AudioContext || window.webkitAudioContext || window.mozAudioContext)) {
+                const buttonGroup = document.querySelector('.button-group');
+                if (buttonGroup) {
+                    const mcBtn = document.createElement('button');
+                    mcBtn.id = 'mcModeBtn';
+                    mcBtn.className = 'secondary-btn';
+                    mcBtn.innerHTML = '🏺 中古音';
+                    mcBtn.title = '当前使用中古音发音，点击切换到现代音';
+                    mcBtn.addEventListener('click', () => {
+                        if (window.reader) {
+                            reader.toggleMCMode();
+                        }
+                    });
+                    buttonGroup.appendChild(mcBtn);
+                    console.log('🔄 HTML备用机制创建了中古音按钮');
+                }
+            }
+        }, 1500);
     </script>
 </body>
 </html>

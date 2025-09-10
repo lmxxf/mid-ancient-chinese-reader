@@ -1,17 +1,26 @@
 // 中古汉语朗读器核心逻辑
 class MiddleChineseReader {
     constructor() {
-        this.init();
         this.synthesis = window.speechSynthesis;
         this.isReading = false;
         this.pronunciation = null;
         this.useMCPronunciation = true; // 默认使用中古音发音
+        this.init(); // 异步初始化
     }
 
-    init() {
+    async init() {
         this.bindEvents();
         this.setupSpeechSynthesis();
-        this.initMiddleChinesePronunciation();
+        await this.initMiddleChinesePronunciation();
+        
+        // 备用按钮创建机制 - 确保按钮一定会显示
+        setTimeout(() => {
+            if (!document.getElementById('mcModeBtn') && 
+                (window.AudioContext || window.webkitAudioContext || window.mozAudioContext)) {
+                console.log('🔄 使用备用机制创建中古音按钮');
+                this.addMCModeToggle();
+            }
+        }, 1000);
     }
 
     bindEvents() {
@@ -55,25 +64,28 @@ class MiddleChineseReader {
     // 初始化中古音发音系统
     async initMiddleChinesePronunciation() {
         try {
+            // 首先检查Web Audio API支持并立即显示按钮
+            if (window.AudioContext || window.webkitAudioContext || window.mozAudioContext) {
+                this.addMCModeToggle();
+                console.log('✅ 中古音切换按钮已添加');
+            } else {
+                console.warn('⚠️ 浏览器不支持Web Audio API');
+                return;
+            }
+
+            // 然后尝试初始化中古音系统
             if (typeof MiddleChinesePronunciation !== 'undefined') {
                 this.pronunciation = new MiddleChinesePronunciation();
                 
                 // 等待初始化完成
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => setTimeout(resolve, 200));
                 
                 const status = this.pronunciation.getStatus();
                 console.log('🎵 中古音发音系统状态:', status);
-                
-                // 只要Web Audio API可用就显示按钮，不管当前AudioContext状态
-                if (window.AudioContext || window.webkitAudioContext || window.mozAudioContext) {
-                    // 添加切换按钮到界面
-                    this.addMCModeToggle();
-                    console.log('✅ 中古音发音系统已就绪');
-                } else {
-                    console.warn('⚠️ 中古音发音系统不支持此浏览器');
-                }
+                console.log('✅ 中古音发音系统已就绪');
             } else {
-                console.error('❌ MiddleChinesePronunciation类未找到');
+                console.error('❌ MiddleChinesePronunciation类未找到，但按钮已显示');
+                // 即使类未找到，也保留按钮，用户点击时再提示
             }
         } catch (error) {
             console.warn('❌ 中古音发音系统初始化失败:', error);
