@@ -65,43 +65,43 @@ class MiddleChinesePronunciation {
     getAudioParams(ipa) {
         // 基础音频参数映射表
         const ipaMapping = {
-            // 声母映射
-            'p': { frequency: 200, type: 'square', duration: 0.1 },
-            'ph': { frequency: 250, type: 'square', duration: 0.12 },
-            'b': { frequency: 180, type: 'sawtooth', duration: 0.1 },
-            't': { frequency: 400, type: 'square', duration: 0.08 },
-            'th': { frequency: 450, type: 'square', duration: 0.1 },
-            'd': { frequency: 350, type: 'sawtooth', duration: 0.08 },
-            'k': { frequency: 600, type: 'square', duration: 0.1 },
-            'kh': { frequency: 650, type: 'square', duration: 0.12 },
-            'g': { frequency: 550, type: 'sawtooth', duration: 0.1 },
-            'm': { frequency: 300, type: 'sine', duration: 0.15 },
-            'n': { frequency: 400, type: 'sine', duration: 0.15 },
-            'ng': { frequency: 200, type: 'sine', duration: 0.18 },
-            'l': { frequency: 350, type: 'triangle', duration: 0.12 },
-            'r': { frequency: 380, type: 'triangle', duration: 0.12 },
-            's': { frequency: 800, type: 'square', duration: 0.15 },
-            'sh': { frequency: 700, type: 'square', duration: 0.15 },
-            'z': { frequency: 750, type: 'sawtooth', duration: 0.15 },
-            'zh': { frequency: 650, type: 'sawtooth', duration: 0.15 },
-            'ts': { frequency: 900, type: 'square', duration: 0.12 },
-            'tsh': { frequency: 950, type: 'square', duration: 0.12 },
-            'dz': { frequency: 850, type: 'sawtooth', duration: 0.12 },
-            'j': { frequency: 500, type: 'triangle', duration: 0.1 },
-            'h': { frequency: 400, type: 'square', duration: 0.1, volume: 0.3 },
+            // 声母映射 - 优化为更接近人声的参数
+            'p': { frequency: 150, type: 'triangle', duration: 0.06, volume: 0.15 },
+            'ph': { frequency: 180, type: 'triangle', duration: 0.08, volume: 0.15 },
+            'b': { frequency: 120, type: 'sine', duration: 0.06, volume: 0.2 },
+            't': { frequency: 250, type: 'triangle', duration: 0.05, volume: 0.15 },
+            'th': { frequency: 280, type: 'triangle', duration: 0.06, volume: 0.15 },
+            'd': { frequency: 200, type: 'sine', duration: 0.05, volume: 0.2 },
+            'k': { frequency: 350, type: 'triangle', duration: 0.06, volume: 0.15 },
+            'kh': { frequency: 380, type: 'triangle', duration: 0.08, volume: 0.15 },
+            'g': { frequency: 300, type: 'sine', duration: 0.06, volume: 0.2 },
+            'm': { frequency: 200, type: 'sine', duration: 0.1, volume: 0.25 },
+            'n': { frequency: 250, type: 'sine', duration: 0.1, volume: 0.25 },
+            'ng': { frequency: 150, type: 'sine', duration: 0.12, volume: 0.25 },
+            'l': { frequency: 220, type: 'sine', duration: 0.08, volume: 0.2 },
+            'r': { frequency: 240, type: 'sine', duration: 0.08, volume: 0.2 },
+            's': { frequency: 500, type: 'triangle', duration: 0.1, volume: 0.1 },
+            'sh': { frequency: 450, type: 'triangle', duration: 0.1, volume: 0.1 },
+            'z': { frequency: 480, type: 'sine', duration: 0.1, volume: 0.15 },
+            'zh': { frequency: 420, type: 'sine', duration: 0.1, volume: 0.15 },
+            'ts': { frequency: 550, type: 'triangle', duration: 0.08, volume: 0.1 },
+            'tsh': { frequency: 580, type: 'triangle', duration: 0.08, volume: 0.1 },
+            'dz': { frequency: 520, type: 'sine', duration: 0.08, volume: 0.15 },
+            'j': { frequency: 300, type: 'sine', duration: 0.06, volume: 0.2 },
+            'h': { frequency: 250, type: 'triangle', duration: 0.06, volume: 0.1 },
 
-            // 韵母映射
-            'a': { frequency: 440, type: 'sine', duration: 0.3 },
-            'e': { frequency: 330, type: 'sine', duration: 0.3 },
-            'i': { frequency: 550, type: 'sine', duration: 0.25 },
-            'o': { frequency: 220, type: 'sine', duration: 0.35 },
-            'u': { frequency: 180, type: 'sine', duration: 0.35 },
-            'y': { frequency: 350, type: 'sine', duration: 0.25 },
-            'ae': { frequency: 380, type: 'sine', duration: 0.3 },
-            'aw': { frequency: 280, type: 'sine', duration: 0.4 },
-            'oj': { frequency: 250, type: 'sine', duration: 0.35 },
-            'aj': { frequency: 400, type: 'sine', duration: 0.35 },
-            'ew': { frequency: 300, type: 'sine', duration: 0.35 },
+            // 韵母映射 - 更接近人声共振频率
+            'a': { frequency: 280, type: 'sine', duration: 0.2, volume: 0.3 },
+            'e': { frequency: 220, type: 'sine', duration: 0.2, volume: 0.3 },
+            'i': { frequency: 350, type: 'sine', duration: 0.18, volume: 0.25 },
+            'o': { frequency: 180, type: 'sine', duration: 0.25, volume: 0.3 },
+            'u': { frequency: 140, type: 'sine', duration: 0.25, volume: 0.3 },
+            'y': { frequency: 260, type: 'sine', duration: 0.18, volume: 0.25 },
+            'ae': { frequency: 300, type: 'sine', duration: 0.2, volume: 0.3 },
+            'aw': { frequency: 200, type: 'sine', duration: 0.28, volume: 0.3 },
+            'oj': { frequency: 190, type: 'sine', duration: 0.25, volume: 0.3 },
+            'aj': { frequency: 320, type: 'sine', duration: 0.25, volume: 0.3 },
+            'ew': { frequency: 240, type: 'sine', duration: 0.25, volume: 0.3 },
 
             // 声调标记
             'H': { pitchShift: 1.2 }, // 去声
@@ -160,10 +160,11 @@ class MiddleChinesePronunciation {
             oscillator.type = type;
             oscillator.frequency.setValueAtTime(frequency * pitchShift, this.audioContext.currentTime);
             
-            // 音量包络
+            // 更柔和的音量包络 - 模拟人声的自然起伏
             gainNode.gain.setValueAtTime(0, this.audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, this.audioContext.currentTime + duration);
+            gainNode.gain.linearRampToValueAtTime(volume * 0.7, this.audioContext.currentTime + 0.02); // 缓慢起音
+            gainNode.gain.linearRampToValueAtTime(volume, this.audioContext.currentTime + duration * 0.3); // 到达峰值
+            gainNode.gain.exponentialRampToValueAtTime(0.005, this.audioContext.currentTime + duration); // 缓慢衰减
             
             // 连接音频节点
             oscillator.connect(gainNode);
@@ -219,9 +220,16 @@ class MiddleChinesePronunciation {
                         params.pitchShift || 1
                     );
                     
-                    // 音段间的短暂停顿
+                    // 优化音段间连接 - 根据音段类型调整停顿
                     if (i < segments.length - 1) {
-                        await new Promise(resolve => setTimeout(resolve, 50));
+                        const nextSegment = segments[i + 1];
+                        // 声母到韵母：几乎无停顿
+                        // 韵母到声调：无停顿  
+                        // 其他情况：很短停顿
+                        const isVowelNext = ['a','e','i','o','u','y','ae','aw','oj','aj','ew'].includes(nextSegment);
+                        const isToneNext = ['H','X'].includes(nextSegment);
+                        const pauseTime = (isVowelNext || isToneNext) ? 10 : 25;
+                        await new Promise(resolve => setTimeout(resolve, pauseTime));
                     }
                 } catch (error) {
                     console.error(`❌ 音段 ${segment} 播放失败:`, error);
@@ -246,9 +254,9 @@ class MiddleChinesePronunciation {
             try {
                 await this.pronounceCharacter(char);
                 
-                // 字间停顿
+                // 优化字间停顿 - 更自然的语调节奏
                 if (i < characters.length - 1) {
-                    await new Promise(resolve => setTimeout(resolve, 800 / speed));
+                    await new Promise(resolve => setTimeout(resolve, 400 / speed));
                 }
             } catch (error) {
                 console.error(`❌ 发音失败: ${char}`, error);
