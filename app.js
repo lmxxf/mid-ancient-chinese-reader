@@ -57,13 +57,25 @@ class MiddleChineseReader {
         try {
             if (typeof MiddleChinesePronunciation !== 'undefined') {
                 this.pronunciation = new MiddleChinesePronunciation();
-                console.log('🎵 中古音发音系统已初始化');
                 
-                // 添加切换按钮到界面
-                this.addMCModeToggle();
+                // 等待初始化完成
+                await new Promise(resolve => setTimeout(resolve, 100));
+                
+                const status = this.pronunciation.getStatus();
+                console.log('🎵 中古音发音系统状态:', status);
+                
+                if (status.supported) {
+                    // 添加切换按钮到界面
+                    this.addMCModeToggle();
+                    console.log('✅ 中古音发音系统已就绪');
+                } else {
+                    console.warn('⚠️ 中古音发音系统不支持此浏览器');
+                }
+            } else {
+                console.error('❌ MiddleChinesePronunciation类未找到');
             }
         } catch (error) {
-            console.warn('中古音发音系统初始化失败:', error);
+            console.warn('❌ 中古音发音系统初始化失败:', error);
         }
     }
 
@@ -74,11 +86,55 @@ class MiddleChineseReader {
             const mcBtn = document.createElement('button');
             mcBtn.id = 'mcModeBtn';
             mcBtn.className = 'secondary-btn';
-            mcBtn.innerHTML = '🎵 现代音';
-            mcBtn.title = '点击切换到中古音发音模式';
             
-            mcBtn.addEventListener('click', () => this.toggleMCMode());
+            // 检查是否为移动设备
+            const isMobile = this.pronunciation && this.pronunciation.isMobileDevice();
+            
+            if (isMobile) {
+                mcBtn.innerHTML = '📱 激活中古音';
+                mcBtn.title = '点击激活中古音发音功能';
+                mcBtn.addEventListener('click', () => this.activateMCMode());
+            } else {
+                mcBtn.innerHTML = '🎵 现代音';
+                mcBtn.title = '点击切换到中古音发音模式';
+                mcBtn.addEventListener('click', () => this.toggleMCMode());
+            }
+            
             buttonGroup.appendChild(mcBtn);
+        }
+    }
+
+    // 移动设备激活中古音
+    async activateMCMode() {
+        const mcBtn = document.getElementById('mcModeBtn');
+        mcBtn.innerHTML = '⏳ 激活中...';
+        mcBtn.disabled = true;
+        
+        try {
+            // 尝试创建音频上下文（需要用户交互）
+            const success = await this.pronunciation.createAudioContext();
+            
+            if (success) {
+                mcBtn.innerHTML = '🎵 现代音';
+                mcBtn.title = '点击切换到中古音发音模式';
+                mcBtn.disabled = false;
+                
+                // 更换事件监听器
+                mcBtn.removeEventListener('click', this.activateMCMode);
+                mcBtn.addEventListener('click', () => this.toggleMCMode());
+                
+                console.log('✅ 中古音在移动设备上激活成功');
+                alert('🎵 中古音功能已激活！现在可以切换发音模式了。');
+            } else {
+                mcBtn.innerHTML = '❌ 激活失败';
+                mcBtn.disabled = true;
+                alert('❌ 中古音激活失败，您的浏览器可能不支持此功能。');
+            }
+        } catch (error) {
+            console.error('移动设备中古音激活失败:', error);
+            mcBtn.innerHTML = '❌ 激活失败';
+            mcBtn.disabled = true;
+            alert('❌ 中古音激活失败：' + error.message);
         }
     }
 

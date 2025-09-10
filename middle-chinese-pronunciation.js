@@ -11,14 +11,53 @@ class MiddleChinesePronunciation {
     async init() {
         try {
             // 检查浏览器支持
-            window.AudioContext = window.AudioContext || window.webkitAudioContext;
+            window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext;
+            
             if (window.AudioContext) {
-                this.audioContext = new AudioContext();
+                // 延迟创建AudioContext，避免移动设备限制
                 this.isSupported = true;
-                console.log('🎵 中古音发音引擎初始化成功');
+                console.log('🎵 中古音发音引擎准备就绪');
+                
+                // 在移动设备上，AudioContext需要用户交互才能创建
+                if (this.isMobileDevice()) {
+                    console.log('📱 检测到移动设备，将在用户交互时激活音频');
+                } else {
+                    await this.createAudioContext();
+                }
+            } else {
+                console.warn('⚠️ 浏览器不支持Web Audio API');
             }
         } catch (error) {
             console.warn('⚠️ 音频上下文初始化失败:', error);
+        }
+    }
+
+    // 检测是否为移动设备
+    isMobileDevice() {
+        return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               ('ontouchstart' in window) ||
+               (navigator.maxTouchPoints > 0);
+    }
+
+    // 创建音频上下文
+    async createAudioContext() {
+        try {
+            if (!this.audioContext) {
+                this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log('🎵 AudioContext创建成功');
+            }
+            
+            // 确保音频上下文处于运行状态
+            if (this.audioContext.state === 'suspended') {
+                await this.audioContext.resume();
+                console.log('🔊 AudioContext已激活');
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('❌ AudioContext创建失败:', error);
+            this.isSupported = false;
+            return false;
         }
     }
 
@@ -103,6 +142,12 @@ class MiddleChinesePronunciation {
         if (!this.isSupported) return null;
 
         try {
+            // 确保音频上下文已创建并激活
+            if (!this.audioContext) {
+                const success = await this.createAudioContext();
+                if (!success) return null;
+            }
+            
             // 确保音频上下文处于运行状态
             if (this.audioContext.state === 'suspended') {
                 await this.audioContext.resume();

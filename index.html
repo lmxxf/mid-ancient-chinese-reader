@@ -83,5 +83,15 @@
     <script src="middle-chinese-data.js"></script>
     <script src="middle-chinese-pronunciation.js"></script>
     <script src="app.js"></script>
+    
+    <!-- 调试工具 (开发环境) -->
+    <script>
+        // 仅在localhost或调试环境加载调试工具
+        if (location.hostname === 'localhost' || location.hostname === '127.0.0.1' || location.search.includes('debug=1')) {
+            const debugScript = document.createElement('script');
+            debugScript.src = 'debug-mobile.js';
+            document.head.appendChild(debugScript);
+        }
+    </script>
 </body>
 </html>
