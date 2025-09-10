@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中古汉语朗读器 - Middle Chinese Reader</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>中古汉语朗读器</h1>
+            <h2>Middle Chinese Reader</h2>
+            <p>基于白一平-沙加尔中古音系统</p>
+        </header>
+
+        <main>
+            <section class="input-section">
+                <h3>输入古诗词文本</h3>
+                <textarea id="textInput" placeholder="请输入古诗词文本，支持《念奴娇·赤壁怀古》等经典作品...">大江东去，浪淘尽，千古风流人物。
+故垒西边，人道是，三国周郎赤壁。
+乱石穿空，惊涛拍岸，卷起千堆雪。
+江山如画，一时多少豪杰。
+
+遥想公瑾当年，小乔初嫁了，雄姿英发。
+羽扇纶巾，谈笑间，樯橹灰飞烟灭。
+故国神游，多情应笑我，早生华发。
+人生如梦，一尊还酹江月。</textarea>
+                <div class="button-group">
+                    <button id="readBtn" class="primary-btn">🔊 朗读全文</button>
+                    <button id="annotateBtn" class="secondary-btn">📝 显示注音</button>
+                    <button id="clearBtn" class="secondary-btn">🗑️ 清空</button>
+                </div>
+            </section>
+
+            <section class="output-section">
+                <h3>中古音标注</h3>
+                <div id="annotationOutput" class="annotation-display">
+                    <p class="placeholder">点击"显示注音"查看中古汉语拟音标注</p>
+                </div>
+            </section>
+
+            <section class="pronunciation-section">
+                <h3>发音说明</h3>
+                <div class="info-card">
+                    <h4>关于中古汉语发音</h4>
+                    <ul>
+                        <li><strong>时间范围：</strong>约公元7-10世纪（唐宋时期）</li>
+                        <li><strong>音系依据：</strong>白一平-沙加尔（Baxter-Sagart）拟音系统</li>
+                        <li><strong>声调系统：</strong>平声、上声、去声、入声四声</li>
+                        <li><strong>注意：</strong>中古音为学术拟音，实际发音可能存在地域差异</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="demo-section">
+                <h3>示例诗词</h3>
+                <div class="demo-buttons">
+                    <button class="demo-btn" data-text="人生如梦，一尊还酹江月">念奴娇·结句</button>
+                    <button class="demo-btn" data-text="大江东去，浪淘尽，千古风流人物">念奴娇·开篇</button>
+                    <button class="demo-btn" data-text="江山如画，一时多少豪杰">念奴娇·咏史</button>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 中古汉语朗读器 | 基于开源技术构建</p>
+        </footer>
+    </div>
+
+    <script src="middle-chinese-data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

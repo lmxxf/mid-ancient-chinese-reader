@@ -1,0 +1,413 @@
+/* 中古汉语朗读器样式表 */
+
+/* 重置与基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'PingFang SC', 'Microsoft YaHei', 'Hiragino Sans GB', sans-serif;
+    line-height: 1.6;
+    color: #333;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* 头部样式 */
+header {
+    text-align: center;
+    margin-bottom: 40px;
+    padding: 30px 0;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+header h1 {
+    font-size: 2.5em;
+    color: #2c3e50;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+header h2 {
+    font-size: 1.2em;
+    color: #7f8c8d;
+    margin-bottom: 10px;
+    font-weight: 300;
+}
+
+header p {
+    color: #95a5a6;
+    font-size: 0.9em;
+}
+
+/* 主要内容区域 */
+main {
+    display: grid;
+    gap: 30px;
+    grid-template-columns: 1fr;
+}
+
+section {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+section h3 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 1.4em;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+/* 输入区域样式 */
+.input-section textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 20px;
+    border: 2px solid #e1e8ed;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.8;
+    resize: vertical;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.input-section textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+.input-section textarea::placeholder {
+    color: #bdc3c7;
+}
+
+/* 按钮样式 */
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.primary-btn, .secondary-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.primary-btn {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.primary-btn:hover {
+    background: linear-gradient(135deg, #2980b9, #1f5582);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.secondary-btn {
+    background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+    color: white;
+    box-shadow: 0 4px 15px rgba(149, 165, 166, 0.3);
+}
+
+.secondary-btn:hover {
+    background: linear-gradient(135deg, #7f8c8d, #6c7b7d);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(149, 165, 166, 0.4);
+}
+
+.primary-btn:disabled, .secondary-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* 标注显示区域 */
+.annotation-display {
+    min-height: 150px;
+    background: #f8f9fa;
+    border: 2px dashed #dee2e6;
+    border-radius: 10px;
+    padding: 20px;
+    font-family: 'Courier New', monospace;
+}
+
+.annotation-display .placeholder {
+    color: #6c757d;
+    text-align: center;
+    font-style: italic;
+    margin: 50px 0;
+}
+
+.annotation-line {
+    margin-bottom: 20px;
+    line-height: 2.5;
+}
+
+.character-annotation {
+    display: inline-block;
+    vertical-align: top;
+    margin: 5px 8px;
+    text-align: center;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease;
+}
+
+.character-annotation:hover {
+    transform: scale(1.05);
+    background: rgba(255, 255, 255, 1);
+}
+
+.character-annotation.unknown {
+    background: rgba(231, 76, 60, 0.1);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.character {
+    display: block;
+    font-size: 24px;
+    font-weight: bold;
+    color: #2c3e50;
+    margin-bottom: 4px;
+}
+
+.ipa {
+    display: block;
+    font-size: 12px;
+    color: #3498db;
+    font-family: 'Times New Roman', serif;
+    margin-bottom: 2px;
+}
+
+.pinyin {
+    display: block;
+    font-size: 11px;
+    color: #27ae60;
+    margin-bottom: 2px;
+}
+
+.tone {
+    display: block;
+    font-size: 10px;
+    color: #8e44ad;
+}
+
+.punctuation {
+    font-size: 20px;
+    color: #7f8c8d;
+    margin: 0 5px;
+}
+
+.annotation-stats {
+    margin-top: 20px;
+    padding: 15px;
+    background: linear-gradient(135deg, #e8f5e8, #d4e5f7);
+    border-radius: 8px;
+    border-left: 4px solid #27ae60;
+}
+
+.annotation-stats p {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* 信息卡片样式 */
+.info-card {
+    background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+    padding: 20px;
+    border-radius: 10px;
+    border-left: 5px solid #e17055;
+}
+
+.info-card h4 {
+    color: #2d3436;
+    margin-bottom: 15px;
+    font-size: 1.1em;
+}
+
+.info-card ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.info-card li {
+    margin-bottom: 10px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.info-card li::before {
+    content: "▶";
+    position: absolute;
+    left: 0;
+    color: #e17055;
+    font-size: 12px;
+}
+
+.info-card strong {
+    color: #2d3436;
+}
+
+/* 示例区域样式 */
+.demo-buttons {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.demo-btn {
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #a29bfe, #6c5ce7);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+}
+
+.demo-btn:hover {
+    background: linear-gradient(135deg, #6c5ce7, #5f3dc4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+}
+
+/* 页脚样式 */
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px;
+    color: #7f8c8d;
+    background: rgba(255, 255, 255, 0.7);
+    border-radius: 10px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+    
+    header h1 {
+        font-size: 2em;
+    }
+    
+    section {
+        padding: 20px;
+    }
+    
+    .button-group {
+        flex-direction: column;
+    }
+    
+    .primary-btn, .secondary-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .demo-buttons {
+        flex-direction: column;
+    }
+    
+    .demo-btn {
+        width: 100%;
+        text-align: center;
+    }
+    
+    .character-annotation {
+        margin: 3px 5px;
+        padding: 6px;
+    }
+    
+    .character {
+        font-size: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.8em;
+    }
+    
+    .input-section textarea {
+        min-height: 150px;
+        font-size: 14px;
+    }
+    
+    .character {
+        font-size: 18px;
+    }
+    
+    .ipa, .pinyin, .tone {
+        font-size: 10px;
+    }
+}
+
+/* 动画效果 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.annotation-line {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* 滚动条样式 */
+.input-section textarea::-webkit-scrollbar {
+    width: 8px;
+}
+
+.input-section textarea::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.input-section textarea::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.input-section textarea::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
